@@ -1,7 +1,7 @@
 # **PGI-RME**
 Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna  
 
-**Versão Estável:** 0.0.1  
+**Versão Estável:** 0.0.2  
 **Licensa:** Proprietário - Usu Privado  
 Todos os direitos reservados - É estritamente proibida a cópia não autorizada de qualquer arquivo deste projeto, por qualquer meio..  
 
@@ -64,3 +64,6 @@ If the contenders project are already allocated in Docker will not be necessary 
 ## **Changelog**  
 = **0.0.1 - 21/03/2020** =  
 Scaffolding do Projeto  
+
+= **0.0.2 - 21/03/2020** =  
+Adicionando Laravel Framework ao projeto  

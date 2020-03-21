@@ -1,5 +1,6 @@
 /source/vendor
 /source/node_modules
+/storage
 .env
 *.key
 *.log

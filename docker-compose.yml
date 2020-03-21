@@ -28,6 +28,17 @@ services:
       - "./storage/mysql:/var/lib/mysql"
     environment:
       MYSQL_ROOT_PASSWORD: admin
-      MYSQL_DATABASE: "pgi_api"
+      MYSQL_DATABASE: "pgi"
       MYSQL_USER: admin
       MYSQL_PASSWORD: admin
+
+  admin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: "pgi_admin"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: admin
+    links:
+      - db
+    ports:
+      - 8889:80

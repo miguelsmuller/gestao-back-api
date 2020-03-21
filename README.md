@@ -1,7 +1,7 @@
 # **PGI-RME**
 Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna  
 
-**Versão Estável:** 0.0.2  
+**Versão Estável:** 0.1.0  
 **Licensa:** Proprietário - Usu Privado  
 Todos os direitos reservados - É estritamente proibida a cópia não autorizada de qualquer arquivo deste projeto, por qualquer meio..  
 
@@ -67,3 +67,6 @@ Scaffolding do Projeto
 
 = **0.0.2 - 21/03/2020** =  
 Adicionando Laravel Framework ao projeto  
+
+= **0.1.0 - 27/03/2020** =  
+Cadastros principais finalizados  

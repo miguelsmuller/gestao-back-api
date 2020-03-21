@@ -1,6 +1,5 @@
 <?php
-
-namespace App;
+namespace Models\Auth;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -36,4 +35,12 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Get the person that owns the user.
+     */
+    public function pessoa()
+    {
+        return $this->belongsTo('Models\Base\Pessoa', 'cirme');
+    }
 }

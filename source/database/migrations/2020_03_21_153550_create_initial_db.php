@@ -6,257 +6,219 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateInitialDb extends Migration
 {
-    /**
-    * Run the migrations.
-    *
-    * @return void
-    */
-    public function up()
-    {
-        /* -- -----------------------------------------------------
-        -- Table `pessoas`
-        -- ----------------------------------------------------- */
+    public function up(){
         Schema::create('pessoas', function (Blueprint $table) {
-            $table->uuid('cirme')->nullable(false);
-            $table->primary('cirme');
+            $table->uuid('id')->nullable(false);
+            $table->primary('id');
 
-            $table->string('nomeCompleto', '255')->nullable(false);
-            $table->timestampTz('dataNascimento')->nullable(false);
+            $table->string('nome_completo', '255')->nullable(false);
+            $table->string('telefone', '60')->nullable(true);
+            $table->string('email', '60')->nullable(true);
+            $table->timestampTz('data_nascimento')->nullable(false);
             $table->string('cpf', '11')->nullable(true)->unique();
             $table->enum('sexo', ['masculino', 'feminino'])->nullable(true);
-            $table->boolean('falecido')->nullable(false)->default(true);
             $table->timestamps();
         });
 
-        /* -- -----------------------------------------------------
-        -- Table `cargos`
-        -- ----------------------------------------------------- */
         Schema::create('cargos', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->autoIncrement();
+            $table->uuid('id')->nullable(false);
+            $table->primary('id');
 
             $table->string('nome', '60')->nullable(false);
             $table->boolean('inativo')->nullable(true)->default(false);
             $table->timestamps();
         });
 
-        /* -- -----------------------------------------------------
-        -- Table `unidadesEscolares`
-        -- ----------------------------------------------------- */
-        Schema::create('unidadesEscolares', function (Blueprint $table) {
-            $table->unsignedBigInteger('inep')->nullable(false);
-            $table->primary(['inep']);
+        Schema::create('unidades_escolares', function (Blueprint $table) {
+            $table->uuid('id')->nullable(false);
+            $table->primary(['id']);
 
-            $table->string('nomeCompleto', '60')->nullable(false);
-            $table->string('nomeAbreviado', '30')->nullable(false);
+            $table->unsignedBigInteger('inep')->nullable(false);
+            $table->string('nome_completo', '60')->nullable(false);
+            $table->string('nome_abreviado', '30')->nullable(false);
             $table->enum('localizacao', ['urbana', 'rural'])->nullable(false);
             $table->boolean('inativo')->nullable(true)->default(false);
             $table->timestamps();
         });
 
-        /* -- -----------------------------------------------------
-        -- Table `vinculosProfissionais`
-        -- ----------------------------------------------------- */
-        Schema::create('vinculosProfissionais', function (Blueprint $table) {
+        Schema::create('vinculos_profissionais', function (Blueprint $table) {
             $table->uuid('id')->nullable(false);
             $table->primary('id');
 
-            $table->uuid('cirme')->nullable(false);
-            $table->unsignedBigInteger('inep')->nullable(false);
-            $table->unsignedBigInteger('idCargo')->nullable(false);
+            $table->uuid('pessoa_id')->nullable(false);
+            $table->uuid('unidade_escolar_id')->nullable(false);
+            $table->uuid('cargo_id')->nullable(false);
             $table->string('matricula', '12')->nullable(true);
-            $table->timestampTz('dataInicio')->nullable(true);
-            $table->timestampTz('dataTermino')->nullable(true);
-            $table->enum('regimeContratacao', ['Estatutário', 'Seletivo', 'Estagiário'])->nullable(false);
-            $table->enum('turno', ['Integral', 'Matutino', 'Vespertino', 'Noturno'])->nullable(false);
+            $table->timestampTz('data_inicio')->nullable(true);
+            $table->timestampTz('data_termino')->nullable(true);
+            $table->enum('regime_contratacao', ['estatutario', 'seletivo', 'estagiario'])->nullable(false);
+            $table->enum('turno', ['integral', 'matutino', 'vespertino', 'noturno'])->nullable(false);
             $table->boolean('inativo')->nullable(true)->default(false);
             $table->timestamps();
 
-            $table->index(['cirme']);
-            $table->index(['inep']);
-            $table->index(['idCargo']);
+            $table->index(['pessoa_id'], 'fk_pessoas_idx');
+            $table->index(['unidade_escolar_id'], 'fk_unidades_escolares_idx');
+            $table->index(['cargo_id'], 'fk_cargos_idx');
 
-            $table->foreign('cirme')->references('cirme')->on('pessoas');
-            $table->foreign('idCargo')->references('id')->on('cargos');
-            $table->foreign('inep')->references('inep')->on('unidadesEscolares');
+            $table->foreign('pessoa_id')->references('id')->on('pessoas');
+            $table->foreign('cargo_id')->references('id')->on('cargos');
+            $table->foreign('unidade_escolar_id')->references('id')->on('unidades_escolares');
         });
 
-        /* -- -----------------------------------------------------
-        -- Table `anosLetivos`
-        -- ----------------------------------------------------- */
-        Schema::create('anosLetivos', function (Blueprint $table) {
-            $table->unsignedInteger('anoLetivo')->nullable(false);
-            $table->primary(['anoLetivo']);
+        Schema::create('anos_letivos', function (Blueprint $table) {
+            $table->uuid('id')->nullable(false);
+            $table->primary('id');
+
+            $table->unsignedInteger('ano_letivo')->nullable(false)->unique();
 
             $table->boolean('inativo')->nullable(true)->default(false);
             $table->timestamps();
         });
 
-        /* -- -----------------------------------------------------
-        -- Table `anosLetivosEscolares`
-        -- ----------------------------------------------------- */
-        Schema::create('anosLetivosEscolares', function (Blueprint $table) {
-            $table->unsignedBigInteger('inep')->nullable(false);
-            $table->unsignedInteger('anoLetivo')->nullable(false);
-            $table->primary(['inep', 'anoLetivo'], 'inep_anoletivo');
+        Schema::create('anos_letivos_escolares', function (Blueprint $table) {
+            $table->uuid('unidade_escolar_id')->nullable(false);
+            $table->uuid('ano_letivo_id')->nullable(false);
+            $table->primary(['unidade_escolar_id', 'ano_letivo_id'], 'anos_letivos_escolares_id');
 
             $table->boolean('inativo')->default(false);
             $table->timestamps();
 
-            $table->index(['inep']);
-            $table->index(['anoLetivo']);
+            $table->index(['unidade_escolar_id'], 'fk_unidades_escolares_idx');
+            $table->index(['ano_letivo_id'], 'fk_anos_letivos_idx');
 
-            $table->foreign('inep')->references('inep')->on('unidadesEscolares');
-            $table->foreign('anoLetivo')->references('anoLetivo')->on('anosLetivos');
+            $table->foreign('unidade_escolar_id')->references('id')->on('unidades_escolares');
+            $table->foreign('ano_letivo_id')->references('id')->on('anos_letivos');
         });
 
-        /* -- -----------------------------------------------------
-        -- Table `anosEscolaridades`
-        -- ----------------------------------------------------- */
-        Schema::create('anosEscolaridades', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->autoIncrement();
+        Schema::create('anos_escolaridades', function (Blueprint $table) {
+            $table->uuid('id')->nullable(false);
+            $table->primary('id');
 
-            $table->string('nomeCompleto', '60')->nullable(false);
-            $table->string('nomeAbreviado', '6')->nullable(false);
+            $table->string('nome_completo', '60')->nullable(false);
+            $table->string('nome_abreviado', '6')->nullable(false);
             $table->boolean('inativo')->nullable(true)->default(false);
             $table->timestamps();
         });
 
-        /* -- -----------------------------------------------------
-        -- Table `anosEscolaridadesDisponiveis`
-        -- ----------------------------------------------------- */
-        Schema::create('anosEscolaridadesDisponiveis', function (Blueprint $table) {
-            $table->unsignedBigInteger('inep')->nullable(false);
-            $table->unsignedInteger('anoLetivo')->nullable(false);
-            $table->unsignedBigInteger('idAnoEscolaridade')->nullable(false);
-            $table->primary(['inep', 'anoLetivo', 'idAnoEscolaridade'], 'inep_anoletivo_idanoescolaridade');
+        Schema::create('anos_escolaridades_disponiveis', function (Blueprint $table) {
+            $table->uuid('unidade_escolar_id')->nullable(false);
+            $table->uuid('ano_letivo_id')->nullable(false);
+            $table->uuid('ano_escolaridade_id')->nullable(false);
+            $table->primary(['unidade_escolar_id', 'ano_letivo_id', 'ano_escolaridade_id'], 'anos_escolaridades_disponiveis_id');
 
             $table->timestamps();
 
-            $table->index(['idAnoEscolaridade']);
-            $table->index(['inep', 'anoLetivo']);
+            $table->index(['unidade_escolar_id', 'ano_letivo_id'], 'fk_anos_letivos_escolares_idx');
+            $table->index(['ano_escolaridade_id'], 'fk_anos_escolaridades_idx');
 
-            $table->foreign(['inep', 'anoLetivo'])->references(['inep', 'anoLetivo'])->on('anosLetivosEscolares');
-            $table->foreign('idAnoEscolaridade')->references('id')->on('anosEscolaridades');
+            $table->foreign(['unidade_escolar_id', 'ano_letivo_id'], 'anos_letivos_escolares_id')->references(['unidade_escolar_id', 'ano_letivo_id'])->on('anos_letivos_escolares');
+            $table->foreign('ano_escolaridade_id')->references('id')->on('anos_escolaridades');
         });
 
-        /* -- -----------------------------------------------------
-        -- Table `turmas`
-        -- ----------------------------------------------------- */
         Schema::create('turmas', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->autoIncrement();
+            $table->uuid('id')->nullable(false);
+            $table->primary('id');
 
-            $table->unsignedBigInteger('inep')->nullable(false);
-            $table->unsignedInteger('anoLetivo')->nullable(false);
-            $table->unsignedBigInteger('idAnoEscolaridade')->nullable(false);
+            $table->uuid('unidade_escolar_id')->nullable(false);
+            $table->uuid('ano_letivo_id')->nullable(false);
+            $table->uuid('ano_escolaridade_id')->nullable(false);
             $table->string('turma', '12');
             $table->enum('turno', ['Matutino', 'Vespertino', 'Noturno'])->nullable(false);
             $table->boolean('inativo')->default(false);
             $table->timestamps();
 
-            $table->foreign(['inep', 'anoLetivo', 'idAnoEscolaridade'])->references(['inep', 'anoLetivo', 'idAnoEscolaridade'])->on('anosEscolaridadesDisponiveis');
+            $table->foreign(['unidade_escolar_id', 'ano_letivo_id', 'ano_escolaridade_id'], 'anos_escolaridades_disponiveis_id')->references(['unidade_escolar_id', 'ano_letivo_id', 'ano_escolaridade_id'])->on('anos_escolaridades_disponiveis');
         });
 
-        /* -- -----------------------------------------------------
-        -- Table `alunos`
-        -- ----------------------------------------------------- */
         Schema::create('alunos', function (Blueprint $table) {
-            $table->uuid('cirme_aluno')->nullable(false);;
-            $table->primary('cirme_aluno');
+            $table->uuid('aluno_id')->nullable(false);;
+            $table->primary('aluno_id');
 
             $table->unsignedBigInteger('inep')->nullable(true);
-            $table->enum('certidaoTipo', ['Integral', 'Matutino', 'Vespertino', 'Noturno'])->nullable(true);
-            $table->string('certidaoCampo1', '45')->nullable(true);
-            $table->string('certidaoCampo2', '45')->nullable(true);
-            $table->string('certidaoCampo3', '45')->nullable(true);
-            $table->string('certidaoUF', '2')->nullable(true);
-            $table->timestampTz('certidaoEmissao')->nullable(true);
-            $table->string('certidaoCartorio', '45')->nullable(true);
-            $table->string('cartaoSUS', '45')->nullable(true);
-            $table->text('justificaticaFaltaDocumentos')->nullable(true);
-            $table->enum('estadoCivil', ['Integral', 'Matutino', 'Vespertino', 'Noturno'])->nullable(false);
-            $table->enum('raca', ['Integral', 'Matutino', 'Vespertino', 'Noturno'])->nullable(false);
-            $table->enum('nacionalidade', ['Integral', 'Matutino', 'Vespertino', 'Noturno'])->nullable(false);
-            $table->enum('religiao', ['Integral', 'Matutino', 'Vespertino', 'Noturno'])->nullable(false);
-            $table->string('ocupacao', '120');
-            $table->boolean('autorizaUsoImagem')->default(false);
-            $table->boolean('saidaLiberada')->default(false);
+            $table->enum('certidao_tipo', ['nascimento.novo', 'nascimento.antigo', 'casamento.novo', 'casamento.antigo'])->nullable(true);
+            $table->string('certidao_campo_1', '32')->nullable(true);
+            $table->string('certidao_campo_2', '8')->nullable(true);
+            $table->string('certidao_campo_3', '4')->nullable(true);
+            $table->string('certidao_uf', '2')->nullable(true);
+            $table->timestampTz('certidao_emissao')->nullable(true);
+            $table->string('certidao_cartorio', '45')->nullable(true);
+            $table->string('cartao_sus', '45')->nullable(true);
+            $table->text('justificatica_falta_documentos')->nullable(true);
+            $table->enum('zona_residencia', ['urbana', 'rural'])->nullable(false);
+            $table->enum('localizacao_diferenciada', ['assentamento', 'indigena', 'quilombo', 'nenhum'])->nullable(false);
+            $table->enum('estado_civil', ['solteira', 'casada', 'separado', 'divorciado', 'viuvo'])->nullable(false);
+            $table->enum('raca', ['amarelo', 'branco', 'indigena', 'pardo', 'preto', 'naodeclarado'])->nullable(false);
+            $table->enum('nacionalidade', ['brasileiro', 'naturalizado', 'estrangeiro'])->nullable(false);
+            $table->string('religiao', '50')->nullable(false);
+            $table->string('ocupacao', '60');
+            $table->boolean('autoriza_uso_imagem')->default(false);
+            $table->boolean('saida_liberada')->default(false);
             $table->timestamps();
 
-            $table->index(['cirme_aluno']);
+            $table->index(['aluno_id'], 'fk_pessoas_idx');
 
-            $table->foreign('cirme_aluno')->references('cirme')->on('pessoas');
+            $table->foreign('aluno_id')->references('id')->on('pessoas');
         });
 
-        /* -- -----------------------------------------------------
-        -- Table `matriculas`
-        -- ----------------------------------------------------- */
         Schema::create('matriculas', function (Blueprint $table) {
-            $table->uuid('idMatricula')->nullable(false);
-            $table->primary('idMatricula');
+            $table->uuid('id')->nullable(false);
+            $table->primary('id');
 
-            $table->uuid('cirme_aluno')->nullable(false);
-            $table->unsignedBigInteger('inep')->nullable(false);
-            $table->unsignedInteger('anoLetivo')->nullable(false);
-            $table->unsignedBigInteger('idAnoEscolaridade')->nullable(false);
-            $table->unsignedBigInteger('idTurma')->nullable(true);
-            $table->unsignedInteger('numOrdem')->nullable(true);
+            $table->uuid('aluno_id')->nullable(false);
+            $table->uuid('turma_id')->nullable(true);
+            $table->uuid('unidade_escolar_id')->nullable(false);
+            $table->uuid('ano_letivo_id')->nullable(false);
+            $table->uuid('ano_escolaridade_id')->nullable(false);
+            $table->unsignedInteger('num_ordem')->nullable(true);
             $table->enum('situacao', ['Matutino', 'Vespertino', 'Noturno'])->nullable(false);
             $table->timestamps();
 
-            $table->index(['idTurma']);
-            $table->index(['idMatricula']);
-            $table->index(['inep', 'anoLetivo', 'idAnoEscolaridade']);
-            $table->index(['cirme_aluno']);
+            $table->index(['aluno_id'], 'fk_alunos_idx');
+            $table->index(['turma_id'], 'fk_turmas_idx');
+            $table->index(['unidade_escolar_id', 'ano_letivo_id', 'ano_escolaridade_id'], 'fk_anos_escolaridades_disponiveis_idx');
 
-            $table->foreign('idTurma')->references('id')->on('turmas');
-            $table->foreign('inep', 'anoLetivo', 'idAnoEscolaridade')->references('inep', 'anoLetivo', 'idAnoEscolaridade')->on('anosEscolaridadesDisponiveis');
-            $table->foreign('cirme_aluno')->references('cirme_aluno')->on('alunos');
+
+            $table->foreign('turma_id')->references('id')->on('turmas');
+            $table->foreign('aluno_id')->references('aluno_id')->on('alunos');
+            $table->foreign('unidade_escolar_id', 'ano_letivo_id', 'ano_escolaridade_id', 'anos_escolaridades_disponiveis_id')->references('unidade_escolar_id', 'ano_letivo_id', 'ano_escolaridade_id')->on('anos_escolaridades_disponiveis');
 
         });
 
-        /* -- -----------------------------------------------------
-        -- Table `responsaveis`
-        -- ----------------------------------------------------- */
         Schema::create('responsaveis', function (Blueprint $table) {
-            $table->uuid('cirme_aluno')->nullable(false);
-            $table->uuid('cirme')->nullable(false);
-            $table->primary(['cirme_aluno', 'cirme'], 'cirme_aluno_cirme');
+            $table->uuid('aluno_id')->nullable(false);
+            $table->uuid('responsavel_id')->nullable(false);
+            $table->primary(['aluno_id', 'responsavel_id'], 'al_re_id');
 
             $table->enum('parentesco', ['Matutino', 'Vespertino', 'Noturno'])->nullable(false);
-            $table->boolean('responsavelLegal')->nullable(true)->default(false);
-            $table->boolean('autorizacaoBuscarAluno')->nullable(true)->default(true);
+            $table->boolean('responsavel_legal')->nullable(true)->default(false);
+            $table->boolean('autorizacao_buscar_aluno')->nullable(true)->default(true);
             $table->timestamps();
 
-            $table->index(['cirme_aluno']);
-            $table->index(['cirme']);
+            $table->index(['aluno_id'], 'fk_alunos_idx');
+            $table->index(['responsavel_id'], 'fk_pessoas_idx');
 
-            $table->foreign('cirme')->references('cirme')->on('pessoas');
-            $table->foreign('cirme_aluno')->references('cirme_aluno')->on('alunos');
+            $table->foreign('responsavel_id')->references('id')->on('pessoas');
+            $table->foreign('aluno_id')->references('aluno_id')->on('alunos');
         });
 
-        /* -- -----------------------------------------------------
-        -- Table `contatos`
-        -- ----------------------------------------------------- */
         Schema::create('contatos', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->autoIncrement();
+            $table->uuid('id')->nullable(false);
+            $table->primary('id');
 
-            $table->uuid('cirme')->nullable(false);
-            $table->string('descricaoContato', '45')->nullable(false);
-            $table->enum('tipoContato', ['telefone', 'email'])->nullable(false);
-            $table->string('valorContato', '120')->nullable(false);
+            $table->uuid('pessoa_id')->nullable(false);
+            $table->string('descricao_contato', '45')->nullable(false);
+            $table->enum('tipo_contato', ['telefone', 'email'])->nullable(false);
+            $table->string('valor_contato', '120')->nullable(false);
             $table->timestamps();
 
-            $table->index(['cirme']);
+            $table->index(['pessoa_id'], 'fk_pessoas_idx');
 
-            $table->foreign('cirme')->references('cirme')->on('pessoas');
+            $table->foreign('pessoa_id')->references('id')->on('pessoas');
         });
 
-        /* -- -----------------------------------------------------
-        -- Table `enderecos`
-        -- ----------------------------------------------------- */
         Schema::create('enderecos', function (Blueprint $table) {
-            $table->uuid('cirme')->nullable(false);
-            $table->primary('cirme');
+            $table->uuid('pessoa_id')->nullable(false);
+            $table->primary('pessoa_id');
 
             $table->string('cep', '8')->nullable(true);
             $table->string('municipio', '60')->nullable(true);
@@ -267,80 +229,70 @@ class CreateInitialDb extends Migration
             $table->string('complemento', '45')->nullable(true);
             $table->timestamps();
 
-            $table->index(['cirme']);
+            $table->index(['pessoa_id'], 'fk_pessoas_idx');
 
-            $table->foreign('cirme')->references('cirme')->on('pessoas')->onDelete('cascade');;
+            $table->foreign('pessoa_id')->references('id')->on('pessoas')->onDelete('cascade');;
         });
 
-        /* -- -----------------------------------------------------
-        -- Table `fichasMedicas`
-        -- ----------------------------------------------------- */
-        Schema::create('fichasMedicas', function (Blueprint $table) {
-            $table->uuid('cirme_aluno')->nullable(false);
-            $table->primary('cirme_aluno');
+        Schema::create('fichas_medicas', function (Blueprint $table) {
+            $table->uuid('aluno_id')->nullable(false);
+            $table->primary('aluno_id');
 
-            $table->string('grupoSanguineo', '2');
-            $table->string('fatorRH', '1');
-            $table->boolean('fazAcompanhamentoMedico');
-            $table->boolean('fazAcompanhamentoPisicologico');
-            $table->boolean('fazAcompanhamentoPisiquiatrico');
-            $table->string('fazUsoMedicacao', '255');
-            $table->string('possuiRestricaoAtividadeFisica', '255');
-            $table->string('alergicoMedicamentos', '255');
-            $table->string('alergicoAlimentos', '255');
-            $table->string('possuiDoencaCongenita', '255');
-            $table->string('possuiPlanoSaude', '255');
-            $table->boolean('sofreuFraturaTrauma');
-            $table->boolean('contraiuCaxumba');
-            $table->boolean('contraiuSarampo');
-            $table->boolean('contraiuRubeula');
-            $table->boolean('contraiuCatapora');
-            $table->boolean('contraiuCoqueluche');
-            $table->boolean('contraiuOutrasDoencas');
+            $table->string('grupo_sanguineo', '2');
+            $table->string('fator_rh', '1');
+            $table->boolean('faz_acompanhamento_medico');
+            $table->boolean('faz_acompanhamento_pisicologico');
+            $table->boolean('faz_acompanhamento_pisiquiatrico');
+            $table->string('faz_uso_medicacao', '255');
+            $table->string('possui_restricao_atividade_fisica', '255');
+            $table->string('alergico_medicamentos', '255');
+            $table->string('alergico_alimentos', '255');
+            $table->string('possui_doenca_congenita', '255');
+            $table->string('possui_planoSaude', '255');
+            $table->boolean('sofreu_fratura_trauma');
+            $table->boolean('contraiu_caxumba');
+            $table->boolean('contraiu_sarampo');
+            $table->boolean('contraiu_rubeula');
+            $table->boolean('contraiu_catapora');
+            $table->boolean('contraiu_coqueluche');
+            $table->boolean('contraiu_outras_doencas');
             $table->boolean('epiletico');
             $table->boolean('emofilico');
             $table->boolean('hipertenso');
             $table->boolean('asmatico');
             $table->boolean('diabetico');
-            $table->boolean('dependenteInsulina');
+            $table->boolean('dependente_insulina');
             $table->timestamps();
 
-            $table->index(['cirme_aluno']);
+            $table->index(['aluno_id'], 'fk_alunos_idx');
 
-            $table->foreign('cirme_aluno')->references('cirme_aluno')->on('alunos');
+            $table->foreign('aluno_id')->references('aluno_id')->on('alunos');
         });
 
         Schema::table('users', function (Blueprint $table) {
-            $table->uuid('cirme')->nullable(false)->unique();
-            $table->boolean('inativo')->nullable(true)->default(false);
+            $table->uuid('pessoa_id')->nullable(false)->unique();
 
-            $table->index(['cirme']);
+            $table->index(['pessoa_id']);
 
-            $table->foreign('cirme')->references('cirme')->on('pessoas');
+            $table->foreign('pessoa_id')->references('id')->on('pessoas');
         });
     }
 
-    /**
-    * Reverse the migrations.
-    *
-    * @return void
-    */
-    public function down()
-    {
+    public function down(){
         Schema::dropIfExists('users');
-        Schema::dropIfExists('fichasMedicas');
+        Schema::dropIfExists('fichas_medicas');
         Schema::dropIfExists('enderecos');
         Schema::dropIfExists('contatos');
         Schema::dropIfExists('responsaveis');
         Schema::dropIfExists('matriculas');
         Schema::dropIfExists('alunos');
         Schema::dropIfExists('turmas');
-        Schema::dropIfExists('anosEscolaridadesDisponiveis');
-        Schema::dropIfExists('anosEscolaridades');
-        Schema::dropIfExists('anosLetivosEscolares');
-        Schema::dropIfExists('anosLetivos');
-        Schema::dropIfExists('vinculosProfissionais');
-        Schema::dropIfExists('unidadesEscolares');
+        Schema::dropIfExists('anos_escolaridades_disponiveis');
+        Schema::dropIfExists('anos_escolaridades');
+        Schema::dropIfExists('anos_letivos_escolares');
+        Schema::dropIfExists('anos_letivos');
+        Schema::dropIfExists('vinculos_profissionais');
+        Schema::dropIfExists('unidades_escolares');
         Schema::dropIfExists('cargos');
         Schema::dropIfExists('pessoas');
     }

@@ -1,7 +1,7 @@
 # **PGI-RME**
 Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna - Plataforma de Gestão Interna  
 
-**Versão Estável:** 0.1.0  
+**Versão Estável:** 0.1.1  
 **Licensa:** Proprietário - Usu Privado  
 Todos os direitos reservados - É estritamente proibida a cópia não autorizada de qualquer arquivo deste projeto, por qualquer meio..  
 
@@ -62,11 +62,14 @@ If the contenders project are already allocated in Docker will not be necessary 
 - Starts existing containers for a service - `docker-compose start`  
 
 ## **Changelog**  
-= **0.0.1 - 21/03/2020** =  
-Scaffolding do Projeto  
+= **0.1.1 - 15/04/2020** =  
+Refatoracao geral com implementacao do oauth e dos modulos iniciais  
+
+= **0.1.0 - 21/03/2020** =  
+Cadastros principais finalizados  
 
 = **0.0.2 - 21/03/2020** =  
 Adicionando Laravel Framework ao projeto  
 
-= **0.1.0 - 27/03/2020** =  
-Cadastros principais finalizados  
+= **0.0.1 - 21/03/2020** =  
+Scaffolding do Projeto  

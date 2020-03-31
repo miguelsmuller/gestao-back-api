@@ -3,15 +3,24 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
+Route::post('/login', 'Api\AuthController@login')->name('auth.login');
+Route::post('/register', 'Api\AuthController@register')->name('auth.register');
 
-//Route::middleware('auth:api')->get('/user', function (Request $request) { return $request->user(); });
+Route::middleware(['auth:api'])->group(function () {
+    Route::get('/info', 'Api\AuthController@info')->name('auth.info');
+    Route::post('/logout', 'Api\AuthController@logout')->name('auth.logout');
+
+    Route::apiResource('pessoas', 'Api\PessoaController')->except(['destroy']);
+    Route::apiResource('anos-letivos', 'Api\AnoLetivoController')->except(['destroy']);
+    Route::apiResource('cargos', 'Api\CargoController')->except(['destroy']);
+    Route::apiResource('unidades-escolares', 'Api\UnidadeEscolarController')->except(['destroy']);
+    Route::apiResource('anos-escolaridades', 'Api\AnoEscolaridadeController')->except(['destroy']);
+
+    Route::apiResource('vinculos-profissionais/unidade-escolar/{ref}', 'Api\VinculoProfissionalController')
+        ->only(['index'])->names(['index' => 'vinculos-profissionais.unidade-escolar.index']);
+    Route::apiResource('vinculos-profissionais/pessoa/{ref}', 'Api\VinculoProfissionalController')
+        ->only(['index'])->names(['index' => 'vinculos-profissionais.pessoa.index']);;
+
+    Route::apiResource('vinculos-profissionais', 'Api\VinculoProfissionalController')->except(['index', 'show', 'destroy']);
+    Route::apiResource('vinculos-profissionais', 'Api\VinculoProfissionalController')->except(['index', 'show', 'destroy']);
+});

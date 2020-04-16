@@ -2,8 +2,14 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
+use Illuminate\Database\Eloquent\RelationNotFoundException;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 
@@ -52,20 +58,51 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
+        if ($exception instanceof AuthenticationException){
+            return $this->errorResponse("Usuário não Autenticado", 401);
+        }
+
+        if ($exception instanceof AuthorizationException) {
+            return $this->errorResponse('Sem permissão para executar esta ação', 403);
+        }
+
         if ($exception instanceof ModelNotFoundException) {
-            return response()->json([
-                'error' => 'Resource not found'
-            ], 404);
+            $modelName = strtolower(class_basename($exception->getModel()));
+            return $this->errorResponse("{$modelName} não encontrado", 404);
+        }
+
+        if ($exception instanceof NotFoundHttpException){
+            return $this->errorResponse("URL não encontrada", 404);
         }
 
         if ($exception instanceof MethodNotAllowedHttpException) {
-            return response()->json([
-                'error' => 'Method not supported for this route.'
-            ], 404);
+            return $this->errorResponse("Médodo não permitido", 405);
         }
 
+        if ($exception instanceof RelationNotFoundException){
+            return $this->errorResponse("Relacionamento não encontrado", 409);
+        }
 
+        if ($exception instanceof QueryException){
+            $errorCode = $exception->errorInfo[1];
 
-        return parent::render($request, $exception);
+            if ($errorCode == 1451){
+                return $this->errorResponse('Exclusão não permitida em virtude de registros vinculantes', 409);
+            }
+        }
+
+        if ($exception instanceof HttpException){
+            return $this->errorResponse($exception->getMessage(), $exception->getStatusCode());
+        }
+
+        //return parent::render($request, $exception); PADRÃO DO LARAVEL SUBSTITUIDO PELAS LINHAS ABAIXO
+        if (config('app.debug')) {
+            return parent::render($request, $exception);
+        }
+        return $this->errorResponse("Erro inesperado. Por favor, tente novamente mais tarde", 500);
+    }
+
+    protected function errorResponse($message, $code){
+        return response()->json(['error' => $message, 'code' => $code], $code);
     }
 }

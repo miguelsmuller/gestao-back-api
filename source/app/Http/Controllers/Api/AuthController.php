@@ -46,10 +46,10 @@ class AuthController
                 'min:6',
                 'string'
             ],
-            'cirme' => [
+            'pessoa_id' => [
                 'required',
                 Rule::exists('pessoas')->where(function ($query) use ($request) {
-                    return $query->where('cirme', $request->cirme)->where('falecido', false);
+                    return $query->where('pessoa_id', $request->pessoa_id)->where('falecido', false);
                 })
             ]
         ];
@@ -59,7 +59,7 @@ class AuthController
         return User::create([
             'name' => $request->username,
             'email' => $request->username,
-            'cirme' => $request->cirme,
+            'pessoa_id' => $request->pessoa_id,
             'password' => Hash::make($request->password),
         ]);
     }

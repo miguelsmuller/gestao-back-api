@@ -9,7 +9,7 @@ Route::get('/phpinfo', function (Request $request) {
     phpinfo();
 })->name('home.phpinfo');
 
-Route::any('{query}', function (Request $request) {
+Route::get('{query}', function (Request $request) {
     return redirect()->route('home.welcome');
 })->name('home.redirect');
 

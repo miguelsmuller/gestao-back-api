@@ -2,18 +2,16 @@
   "editor.wordWrap": "on",
   "editor.minimap.enabled": false,
 
-  "editor.codeActionsOnSave": { "source.fixAll.tslint": true },
-
   // "files.autoSave": "afterDelay",
   // "files.autoSaveDelay": 3000,
 
-  "prettier.tabWidth": 2,
-  "prettier.singleQuote": true,
-  "prettier.useTabs": false,
+  //"prettier.tabWidth": 2,
+  //"prettier.singleQuote": true,
+  //"prettier.useTabs": false,
 
-  "html.format.wrapAttributes": "auto",
-  "html.format.wrapLineLength": 0,
-  "html.format.unformatted": "a, abbr, acronym, b, bdo, big, br, ...",
+  //"html.format.wrapAttributes": "auto",
+  //"html.format.wrapLineLength": 2,
+  //"html.format.unformatted": "a, abbr, acronym, b, bdo, big, br, ...",
 
   "workbench.editor.enablePreview": false,
 
@@ -21,8 +19,8 @@
 
   "files.exclude": {
     "**/.vscode": true,
-    "**/node_modules": true,
-    "dist": true,
-    "e2e": true
+    "**/node_modules": true
   },
+  "editor.trimAutoWhitespace": false,
+  "diffEditor.ignoreTrimWhitespace": false,
 }

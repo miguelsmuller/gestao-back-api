@@ -15,7 +15,7 @@ class PessoaController
         $query = new Pessoa();
         $query = $query->newQuery();
 
-        $request->has('order') ? $order = $request->get('order') : $order = 'nome_completo';
+        $request->has('order') ? $order = $request->get('order') : $order = 'create_at';
         $request->has('sort') ? $sort = $request->get('sort') : $sort = 'asc';
         $request->has('per_page') ? $perPage = $request->get('per_page') : $perPage = 10;
 
